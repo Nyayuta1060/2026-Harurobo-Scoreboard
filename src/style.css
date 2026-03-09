@@ -23,9 +23,11 @@ html, body {
 .layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  padding: 8px;
-  gap: 6px;
+  width: 100vw;
+  height: 100dvh;          /* dvh で iOS Safari のアドレスバー対応 */
+  padding: clamp(4px, 1vw, 10px);
+  gap: clamp(4px, 0.8vh, 8px);
+  overflow: hidden;
 }
 
 /* ─── 上部: スコアバー ──────────────────────────────────────────────────── */
@@ -33,44 +35,54 @@ html, body {
 .top-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: clamp(6px, 1vw, 12px);
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .score-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 18px;
-  border-radius: 14px;
-  min-width: 210px;
-  gap: 3px;
+  padding: clamp(4px, 0.8vh, 10px) clamp(8px, 1.5vw, 20px);
+  border-radius: clamp(8px, 1.2vw, 14px);
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
-.blue-score-box { background: rgba(37,99,235,0.15);  border: 2px solid #3b82f6; }
+.blue-score-box { background: rgba(37,99,235,0.15); border: 2px solid #3b82f6; }
 .red-score-box  { background: rgba(220,38,38,0.15);  border: 2px solid #ef4444; }
 
-.score-top { display: flex; align-items: center; gap: 8px; }
+.score-top { display: flex; align-items: center; gap: 6px; min-width: 0; }
 
-.score-name { font-size: 13px; color: #94a3b8; font-weight: 500; }
+.score-name {
+  font-size: clamp(10px, 1.2vw, 14px);
+  color: #94a3b8; font-weight: 500;
+  white-space: nowrap;
+}
 
 .mode-tag {
-  font-size: 11px; padding: 2px 8px;
-  border-radius: 6px; font-weight: 700;
+  font-size: clamp(9px, 1vw, 12px);
+  padding: 2px 6px;
+  border-radius: 5px; font-weight: 700;
+  white-space: nowrap;
 }
 .tag-auto   { background: #7c3aed; color: #fff; }
 .tag-manual { background: #92400e; color: #fff; }
 
 .score-num {
-  font-size: 58px; font-weight: 900; line-height: 1;
+  font-size: clamp(32px, 5.5vw, 64px);
+  font-weight: 900; line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .blue-num { color: #60a5fa; }
 .red-num  { color: #f87171; }
 
 .score-detail {
-  display: flex; gap: 8px;
-  font-size: 11px; color: #64748b;
+  display: flex; gap: clamp(4px, 0.8vw, 10px);
+  font-size: clamp(9px, 1vw, 12px); color: #64748b;
+  flex-wrap: wrap; justify-content: center;
 }
 .score-detail span { display: flex; gap: 2px; }
 .score-detail em   { color: #94a3b8; font-style: normal; font-weight: 600; }
@@ -78,20 +90,33 @@ html, body {
 /* ─── タイトルエリア ─────────────────────────────────────────────────────── */
 
 .title-area {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; gap: 4px;
+  flex: 0 0 auto;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
 }
 
-.title { font-size: 18px; font-weight: 700; color: #cbd5e1; letter-spacing: 0.1em; }
+.title {
+  font-size: clamp(13px, 1.6vw, 20px);
+  font-weight: 700; color: #cbd5e1;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
 
-.legend { display: flex; gap: 10px; font-size: 10px; color: #475569; }
+.legend {
+  display: flex; gap: clamp(4px, 0.8vw, 10px);
+  font-size: clamp(8px, 0.9vw, 11px); color: #475569;
+  white-space: nowrap;
+}
 
 .reset-btn {
-  padding: 5px 14px; border-radius: 8px;
+  padding: 4px 12px; border-radius: 7px;
   border: 1px solid rgba(255,255,255,0.15);
   background: rgba(255,255,255,0.06);
-  color: #64748b; font-size: 12px; cursor: pointer;
+  color: #64748b;
+  font-size: clamp(10px, 1.1vw, 13px);
+  cursor: pointer;
   transition: background 0.1s;
+  white-space: nowrap;
 }
 .reset-btn:active { background: rgba(255,255,255,0.14); }
 
@@ -99,48 +124,55 @@ html, body {
 
 .zone-area {
   display: flex; flex-direction: column;
-  flex: 1; gap: 5px; min-height: 0;
+  flex: 1; gap: clamp(3px, 0.5vh, 6px);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .zone-row {
   display: grid;
-  grid-template-columns: 1fr 108px 1fr;
+  grid-template-columns: 1fr clamp(72px, 8.5vw, 110px) 1fr;
   align-items: stretch;
-  gap: 5px;
+  gap: clamp(3px, 0.5vw, 6px);
   flex: 1; min-height: 0;
 }
 
 /* ─── 陣（中央）────────────────────────────────────────────────────────── */
 
 .fortress {
-  border-radius: 12px;
+  border-radius: clamp(6px, 1vw, 12px);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 6px;
-  border: 2.5px solid transparent;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  gap: 4px;
+  border: 2px solid transparent;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.4);
   transition: background 0.25s, box-shadow 0.25s;
+  min-width: 0;
 }
 
 .fortress-none { background: #e2e8f0; border-color: #94a3b8; }
 .fortress-blue {
   background: #1d4ed8; border-color: #2563eb;
-  box-shadow: 0 4px 20px rgba(37,99,235,0.55);
+  box-shadow: 0 4px 18px rgba(37,99,235,0.55);
 }
-.fortress-red  {
+.fortress-red {
   background: #b91c1c; border-color: #dc2626;
-  box-shadow: 0 4px 20px rgba(220,38,38,0.55);
+  box-shadow: 0 4px 18px rgba(220,38,38,0.55);
 }
 
 .fortress-zi {
-  font-size: 17px; font-weight: 800; color: #1e293b; letter-spacing: 0.02em;
+  font-size: clamp(12px, 1.5vw, 18px);
+  font-weight: 800; color: #1e293b;
 }
 .fortress-blue .fortress-zi,
 .fortress-red  .fortress-zi { color: rgba(255,255,255,0.93); }
 
-.fortress-caps { display: flex; gap: 6px; }
+.fortress-caps { display: flex; gap: 4px; }
 
-.cap-ind { font-size: 15px; font-weight: 700; transition: opacity 0.2s; }
+.cap-ind {
+  font-size: clamp(11px, 1.3vw, 16px);
+  font-weight: 700; transition: opacity 0.2s;
+}
 .cap-off  { opacity: 0.18; }
 .cap-blue { color: #93c5fd; }
 .cap-red  { color: #fca5a5; }
@@ -148,9 +180,13 @@ html, body {
 /* ─── 陣コントロール（両サイド）────────────────────────────────────────── */
 
 .zone-ctrl {
-  display: flex; align-items: center;
-  gap: 6px; padding: 0 8px;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: clamp(2px, 0.4vw, 6px);
+  padding: 0 clamp(4px, 0.6vw, 10px);
+  border-radius: clamp(6px, 0.8vw, 10px);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .blue-ctrl {
@@ -164,42 +200,60 @@ html, body {
   justify-content: flex-start;
 }
 
-.ctrl-group { display: flex; align-items: center; gap: 3px; }
+.ctrl-group {
+  display: flex; align-items: center;
+  gap: clamp(1px, 0.3vw, 3px);
+  flex-shrink: 0;
+}
 
 .ctrl-lbl {
-  font-size: 11px; color: #64748b;
-  min-width: 20px; text-align: center;
+  font-size: clamp(9px, 1vw, 12px);
+  color: #64748b;
+  width: clamp(14px, 1.8vw, 22px);
+  text-align: center;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .ctrl-btn {
-  width: 38px; height: 46px;
-  border-radius: 8px;
+  width: clamp(28px, 3.2vw, 40px);
+  height: clamp(32px, 4.5vh, 48px);
+  border-radius: 7px;
   border: 1.5px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.08);
-  color: #fff; font-size: 20px;
+  color: #fff;
+  font-size: clamp(14px, 1.8vw, 22px);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.1s;
   line-height: 1;
+  flex-shrink: 0;
 }
 .ctrl-btn:active { background: rgba(255,255,255,0.22); }
 
 .ctrl-num {
-  min-width: 28px; text-align: center;
-  font-size: 20px; font-weight: 700;
+  width: clamp(20px, 2.2vw, 30px);
+  text-align: center;
+  font-size: clamp(14px, 1.8vw, 22px);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: #e2e8f0;
+  flex-shrink: 0;
 }
 
 .knocked-btn {
-  padding: 6px 9px; border-radius: 8px;
+  padding: 4px clamp(4px, 0.6vw, 8px);
+  border-radius: 7px;
   border: 1.5px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
-  color: #64748b; font-size: 12px; font-weight: 600;
-  cursor: pointer; white-space: nowrap;
+  color: #64748b;
+  font-size: clamp(9px, 1vw, 12px);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
   transition: background 0.1s, color 0.1s, border-color 0.1s;
-  height: 46px;
+  height: clamp(32px, 4.5vh, 48px);
+  flex-shrink: 0;
 }
 .knocked-on {
   background: rgba(245,158,11,0.25);
@@ -210,13 +264,19 @@ html, body {
 /* ─── 下部バー ───────────────────────────────────────────────────────────── */
 
 .bot-bar {
-  display: flex; gap: 10px; flex-shrink: 0;
+  display: flex;
+  gap: clamp(6px, 1vw, 12px);
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .bot-panel {
   display: flex; align-items: center;
-  gap: 8px; padding: 10px 14px;
-  border-radius: 14px; flex: 1;
+  gap: clamp(4px, 0.8vw, 10px);
+  padding: clamp(6px, 1vh, 12px) clamp(8px, 1.2vw, 16px);
+  border-radius: clamp(8px, 1.2vw, 14px);
+  flex: 1;
+  min-width: 0;
 }
 .blue-bot-panel {
   background: rgba(37,99,235,0.10);
@@ -228,8 +288,10 @@ html, body {
 }
 
 .team-badge {
-  font-size: 15px; font-weight: 700;
-  padding: 4px 10px; border-radius: 8px; flex-shrink: 0;
+  font-size: clamp(12px, 1.4vw, 16px);
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 7px; flex-shrink: 0;
 }
 .blue-badge { background: #2563eb; color: #fff; }
 .red-badge  { background: #dc2626; color: #fff; }
@@ -237,18 +299,22 @@ html, body {
 /* ─── 状態ボタン ─────────────────────────────────────────────────────────── */
 
 .status-btn, .mode-btn {
-  flex: 1; padding: 12px 6px;
-  border-radius: 10px;
-  font-size: 15px; font-weight: 700;
+  flex: 1;
+  padding: clamp(8px, 1.2vh, 14px) 4px;
+  border-radius: 9px;
+  font-size: clamp(12px, 1.4vw, 16px);
+  font-weight: 700;
   cursor: pointer;
   border: 2px solid transparent;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   transition: transform 0.1s;
+  white-space: nowrap;
+  min-width: 0;
 }
 .status-btn:active, .mode-btn:active { transform: scale(0.95); }
 
-.achieved   { background: #16a34a; color: #fff; border-color: #15803d; box-shadow: 0 2px 10px rgba(22,163,74,0.4); }
+.achieved   { background: #16a34a; color: #fff; border-color: #15803d; box-shadow: 0 2px 8px rgba(22,163,74,0.4); }
 .unachieved { background: #1e293b; color: #475569; border-color: #334155; }
 
-.auto-mode   { background: #7c3aed; color: #fff; border-color: #6d28d9; box-shadow: 0 2px 10px rgba(124,58,237,0.4); }
-.manual-mode { background: #92400e; color: #fff; border-color: #78350f; box-shadow: 0 2px 10px rgba(146,64,14,0.4); }
+.auto-mode   { background: #7c3aed; color: #fff; border-color: #6d28d9; box-shadow: 0 2px 8px rgba(124,58,237,0.4); }
+.manual-mode { background: #92400e; color: #fff; border-color: #78350f; box-shadow: 0 2px 8px rgba(146,64,14,0.4); }
