@@ -1,2 +1,1 @@
-Hopefully you'll get used to my
-hugs - meaning good-bye.
+https://nyayuta1060.github.io/2026-Harurobo-Scoreboard/
