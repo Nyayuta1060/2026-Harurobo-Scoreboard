@@ -16,7 +16,6 @@ interface ZoneHalf {
 interface TeamState {
   isAuto:      boolean; // true=自動 / false=手動（試合前に決定）
   yagurazZone: boolean; // 櫓ゾーン初進入（得点 A トリガー）
-  ohte:        boolean; // 王手
 }
 
 interface Zone {
@@ -36,13 +35,14 @@ interface ScoreBreakdown {
   c: number; // リング（ゾーン）
   d: number; // リング（櫓上）
   e: number; // 陣取り
+  f: number; // 王手達成
   total: number;
 }
 
 // ─── 初期状態 ──────────────────────────────────────────────────────────────
 
 const makeHalf  = (): ZoneHalf  => ({ yagura: 0, ringsOnYagura: 0, ringsInZone: 0, knocked: false });
-const makeTeam  = (): TeamState => ({ isAuto: true, yagurazZone: false, ohte: false });
+const makeTeam  = (): TeamState => ({ isAuto: true, yagurazZone: false });
 const makeState = (): GameState => ({
   blue:  makeTeam(),
   red:   makeTeam(),
@@ -71,6 +71,22 @@ function zoneOwner(zone: Zone): 'blue' | 'red' | 'none' {
   return 'none';
 }
 
+/**
+ * 王手の自動判定
+ * 手動: 陣取り数 >= 3
+ * 自動: 「櫓あり かつ ↑R >= 2」の陣が 3 つ以上
+ */
+function isOhte(team: TeamKey): boolean {
+  const auto = state[team].isAuto;
+  if (!auto) {
+    // 手動: 陣取り済みが3つ以上
+    return state.zones.filter(z => isCaptured(z, team)).length >= 3;
+  } else {
+    // 自動: 櫓あり & ↑R >= 2 の陣が3つ以上
+    return state.zones.filter(z => z[team].yagura > 0 && z[team].ringsOnYagura >= 2).length >= 3;
+  }
+}
+
 /** 得点A〜Eを計算 */
 function calcScore(team: TeamKey): ScoreBreakdown {
   const t    = state[team];
@@ -97,20 +113,25 @@ function calcScore(team: TeamKey): ScoreBreakdown {
   const captured = state.zones.filter(z => isCaptured(z, team)).length;
   const e        = captured * 30;
 
-  return { a, b, c, d, e, total: a + b + c + d + e };
+  // F: 王手達成（手動:50pt / 自動:100pt）
+  const f = isOhte(team) ? (auto ? 100 : 50) : 0;
+
+  return { a, b, c, d, e, f, total: a + b + c + d + e + f };
 }
 
 // ─── レンダリング ──────────────────────────────────────────────────────────
 
 function renderScoreBox(team: TeamKey): string {
-  const s  = calcScore(team);
-  const t  = state[team];
-  const nm = team === 'blue' ? '青チーム' : '赤チーム';
+  const s    = calcScore(team);
+  const t    = state[team];
+  const ohte = isOhte(team);
+  const nm   = team === 'blue' ? '青チーム' : '赤チーム';
   return `
-    <div class="score-box ${team}-score-box">
+    <div class="score-box ${team}-score-box${ohte ? ' ohte-active' : ''}">
       <div class="score-top">
         <span class="score-name">${nm}</span>
         <span class="mode-tag ${t.isAuto ? 'tag-auto' : 'tag-manual'}">${t.isAuto ? '自動' : '手動'}</span>
+        ${ohte ? '<span class="ohte-badge">⚑ 王手</span>' : ''}
       </div>
       <div class="score-num ${team}-num">${s.total}</div>
       <div class="score-detail">
@@ -119,7 +140,9 @@ function renderScoreBox(team: TeamKey): string {
         <span title="C:リング(ゾーン)">C<em>${s.c}</em></span>
         <span title="D:リング(櫓上)">D<em>${s.d}</em></span>
         <span title="E:陣取り">E<em>${s.e}</em></span>
+        <span title="F:王手">F<em>${s.f}</em></span>
       </div>
+      ${ohte ? '<div class="ohte-msg">本丸リング挑戦可能！</div>' : ''}
     </div>`;
 }
 
@@ -170,13 +193,13 @@ function renderZoneRows(): string {
 }
 
 function renderBottomPanel(team: TeamKey): string {
-  const t  = state[team];
-  const nm = team === 'blue' ? '青' : '赤';
+  const t    = state[team];
+  const ohte = isOhte(team);
+  const nm   = team === 'blue' ? '青' : '赤';
   return `
     <div class="bot-panel ${team}-bot-panel">
       <span class="team-badge ${team}-badge">${nm}</span>
-      <button class="status-btn ${t.ohte ? 'achieved' : 'unachieved'}"
-        data-action="toggle" data-team="${team}" data-key="ohte">王手</button>
+      <span class="status-btn ${ohte ? 'achieved' : 'unachieved'} readonly-btn">王手</span>
       <button class="status-btn ${t.yagurazZone ? 'achieved' : 'unachieved'}"
         data-action="toggle" data-team="${team}" data-key="yagurazZone">櫓ゾーン</button>
       <button class="mode-btn ${t.isAuto ? 'auto-mode' : 'manual-mode'}"
@@ -238,7 +261,7 @@ function handleClick(e: Event): void {
     case 'toggle': {
       const team = el.dataset.team as TeamKey;
       const key  = el.dataset.key;
-      if (key === 'ohte' || key === 'yagurazZone' || key === 'isAuto') {
+      if (key === 'yagurazZone' || key === 'isAuto') {
         state[team][key] = !state[team][key];
       }
       break;
